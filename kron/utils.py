@@ -89,7 +89,9 @@ class MatrixCollection:
     .. codeauthor:: Moritz Feuerle, 2022
     """
     
-    __array_priority__ = _interfaces.kron_base.__array_priority__ + 0.1
+    __kron_priority__ = 0.1
+    __array_priority__ = 100
+    __sparse_priority__ = 100
     
     dtype : np.dtype
     """Common datatype of a single matrix element over all matricies"""
@@ -217,7 +219,7 @@ class MatrixCollection:
         
             
     def __add__(self, other):
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         if other == 0:
@@ -251,7 +253,7 @@ class MatrixCollection:
         
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         return MatrixCollection([A @ other for A in self.data])
@@ -288,7 +290,7 @@ class MatrixCollection:
         
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         return MatrixCollection([A * other for A in self.data])

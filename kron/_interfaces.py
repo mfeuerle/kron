@@ -34,8 +34,9 @@ class kron_base:
     
     Example: :math:`A \otimes B \otimes C` has ``kdim=3``."""
     
-    __array_priority__ = 11  # enables __rmatmul__ with ndarray
-    __sparse_priority__ = 11  # enables __rmatmul__ with scipy sparse matrices
+    __array_priority__ = 100  # enables __rmatmul__ with ndarray
+    __sparse_priority__ = 100  # enables __rmatmul__ with scipy sparse matrices
+    __kron_priority__ = 0  # for other modules to get priority over this module if needed.
     
     def __init__(self):
         """This is a interface, do not instantiate this class directly.
@@ -57,6 +58,8 @@ class kron_base:
         ----------
         This is a interface method, and has to be implemented.
         """
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
+            return NotImplemented
         return NotImplementedError(" This is a interface method and has to be implemented.")
     
     def __rmul__(self, other):      # other * self
@@ -86,6 +89,8 @@ class kron_base:
         ----------
         This is a interface method, and has to be implemented.
         """
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
+            return NotImplemented
         return NotImplementedError(" This is a interface method and has to be implemented.")
     
     def __rmatmul__(self, other):   # other @ self
@@ -124,6 +129,8 @@ class kron_base:
         ----------
         This is a interface method, and has to be implemented.
         """
+        if self.__kron_priority__ < getattr(x, "__kron_priority__", -1.0):
+            return NotImplemented
         return NotImplementedError(" This is a interface method and has to be implemented.")
     
     def __radd__(self, other):  # other + self
@@ -138,7 +145,7 @@ class kron_base:
         
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         return self.__add__(-other)  
     

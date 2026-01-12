@@ -141,7 +141,7 @@ class kron_matrix(_kronshaped_interface):
             
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
             
         if isscalarlike(other): 
@@ -153,66 +153,6 @@ class kron_matrix(_kronshaped_interface):
                 return other.__rmul__(self) # use rmul from kronsum_matrix
         raise ValueError(f"Elementwise multiplication for {type(other)} not supported, use .assemble()")
     
-    # ####################################################
-    # # element-wise division
-    # ####################################################
-    # def __truediv__(self,other):        # self / other
-    #     """Elementwise division ``self / other`` of two matricies ``self``
-    #     and ``other`` with same shape, or scalar division where ``other`` is a scalar value.
-        
-    #     ``other`` could either be a scalar, another :obj:`kron_matrix` or a :obj:`kronsum_matrix`.
-    #     In the first two cases a new :obj:`kron_matrix`, in the third case a new :obj:`kronsum_matrix` is returned.
-        
-    #     Note
-    #     ----------
-    #         This method only handels cases where the Kronecker structure is preserved, the full Kronecker product will
-    #         never be assembled implictly without the users knowlege. Hence, elementwise division with classic 
-    #         matricies like :obj:`scipy.sparse.sparray` or :obj:`numpy.ndarray` is not supported as well as the 
-    #         division with Kronecker matricies with different :attr:`kshape`.
-    #         In this case one hase to manually :meth:`assemble` the matrix first.
-        
-    #     Returns
-    #     ----------
-    #     :obj:`kron_matrix` or :obj:`kronsum_matrix`
-    #         Elementwise division of this matrix with ``other``
-    #     """
-    #     if isscalarlike(other): 
-    #         return kron_matrix(self._data[:-1] + [self._data[-1] / other])
-    #     if iskron(other):
-    #         if iskron(other): 
-    #             return kron_matrix([self._data[i] / other._data[i] for i in range(self.kdim)])
-    #         if iskronsum(other): 
-    #             return other.__rtruediv__(self) # use rmul from kronsum_matrix
-    #     raise ValueError(f"Elementwise division for {type(other)} not supported, use .assemble()")
-    
-    # def __rtruediv__(self,other):        # self / other
-    #     """Elementwise division ``other / self`` of two matricies ``self``
-    #     and ``other`` with same shape, or scalar division where ``other`` is a scalar value.
-        
-    #     ``other`` could either be a scalar, another :obj:`kron_matrix` or a :obj:`kronsum_matrix`.
-    #     In the first two cases a new :obj:`kron_matrix`, in the third case a new :obj:`kronsum_matrix` is returned.
-        
-    #     Note
-    #     ----------
-    #         This method only handels cases where the Kronecker structure is preserved, the full Kronecker product will
-    #         never be assembled implictly without the users knowlege. Hence, elementwise division with classic 
-    #         matricies like :obj:`scipy.sparse.sparray` or :obj:`numpy.ndarray` is not supported as well as the 
-    #         division with Kronecker matricies with different :attr:`kshape`.
-    #         In this case one hase to manually :meth:`assemble` the matrix first.
-        
-    #     Returns
-    #     ----------
-    #     :obj:`kron_matrix` or :obj:`kronsum_matrix`
-    #         Elementwise division of this matrix with ``other``
-    #     """
-    #     if isscalarlike(other): 
-    #         return kron_matrix([1/self._data[i] for i in range(self.kdim-1)] + [other/self._data[-1]])
-    #     if iskron(other):
-    #         if iskron(other): 
-    #             return kron_matrix([self._data[i] / other._data[i] for i in range(self.kdim)])
-    #         if iskronsum(other): 
-    #             return other.__rtruediv__(self) # use rmul from kronsum_matrix
-    #     raise ValueError(f"Elementwise division for {type(other)} not supported, use .assemble()")
         
     ####################################################
     # Matrix-Matrix and Matrix-Vector multiplication
@@ -247,7 +187,7 @@ class kron_matrix(_kronshaped_interface):
             
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         if isscalarlike(other):
@@ -361,7 +301,7 @@ class kron_matrix(_kronshaped_interface):
         
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         if isscalarlike(other) and other == 0:
@@ -645,7 +585,7 @@ class kronsum_matrix(_kronshaped_interface):
             
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         return sum([A * other for A in self._data])
@@ -666,37 +606,6 @@ class kronsum_matrix(_kronshaped_interface):
         .. codeauthor:: Moritz Feuerle, 2022
         """
         return sum([other * A for A in self._data])
-    
-    # ####################################################
-    # # element-wise division
-    # ####################################################
-    # def __truediv__(self,other):        # self / other
-    #     """Elementwise division ``self / other`` of two matricies ``self``
-    #     and ``other`` with same shape, or scalar division where ``other`` is a scalar value.
-        
-    #     Since ``other`` is divided with all :math:`A_i`, it has to be compatible with 
-    #     :meth:`A[i] * other <kron_matrix.__mul__>`.
-        
-    #     Returns
-    #     ----------
-    #     :obj:`kronsum_matrix`
-    #         Elementwise division of this matrix with ``other``
-    #     """
-    #     return sum([A / other for A in self._data])
-    
-    # def __rtruediv__(self,other):       # other / self
-    #     """Elementwise division ``other / self`` of two matricies ``self``
-    #     and ``other`` with same shape, or scalar division where ``other`` is a scalar value.
-        
-    #     Since ``other`` is divided with all :math:`A_i`, it has to be compatible with 
-    #     :meth:`other * A[i] <kron_matrix.__rmul__>`.
-        
-    #     Returns
-    #     ----------
-    #     :obj:`kronsum_matrix`
-    #         Elementwise division of this matrix with ``other``
-    #     """
-    #     raise ValueError("this is not possible without loosing the kronecker structure... i suppose")
     
     ####################################################
     # Matrix-Matrix and Matrix-Vector multiplication
@@ -725,7 +634,7 @@ class kronsum_matrix(_kronshaped_interface):
             
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         return sum([A @ other for A in self._data])
@@ -751,7 +660,7 @@ class kronsum_matrix(_kronshaped_interface):
         
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         if isscalarlike(other):
@@ -1024,7 +933,7 @@ class block_matrix(kron_base):
             
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         if isscalarlike(other): 
@@ -1090,7 +999,7 @@ class block_matrix(kron_base):
             
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         assert other.ndim <= 2
@@ -1223,7 +1132,7 @@ class block_matrix(kron_base):
         
         .. codeauthor:: Moritz Feuerle, 2022
         """
-        if hasattr(other, "__array_priority__") and self.__array_priority__ < other.__array_priority__:
+        if self.__kron_priority__ < getattr(other, "__kron_priority__", -1.0):
             return NotImplemented
         
         if isscalarlike(other):

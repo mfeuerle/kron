@@ -94,11 +94,6 @@ or manually copy A bevor changing its contents:
 >>> A[0,0] = 0
 
 
-
-Since :mod:`scipy.sparse` does not resepect ``__array_priority__`` when importing this module
-the :func:`kron.utils.patch_scipy_array_priority` method is automatically called. 
-
-
 Kronecker product module
 ~~~~~~~~~~~~~~~~~~~~~~~~
 .. toctree::
