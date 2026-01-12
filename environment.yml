@@ -1,0 +1,24 @@
+# conda env create -f environment.yml
+name: kron
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # actually needed
+  - python=3.12
+  - numpy
+  - scipy
+  - pip
+  - pip:
+      - -e .
+  # for testing
+  - pytest
+  - pytest-cov
+  # for performance
+  - mkl
+  - blas=*=*mkl
+  # for documentation
+  - sphinx
+  - pydata-sphinx-theme
+  # for plotting
+  - matplotlib

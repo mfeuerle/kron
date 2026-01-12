@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kron"
+version = "1.0"
+description = "Efficient kronecker product implementation"
+authors = [{ name = "Moritz Feuerle" }]
+requires-python = ">=3.12"
