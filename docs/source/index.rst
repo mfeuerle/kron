@@ -35,13 +35,13 @@ All matrix classes in this module can be wraped as :obj:`scipy.sparse.linalg.Lin
 Normally this is already done at the start of such a method, i.e. one does not 
 need to call :obj:`scipy.sparse.linalg.aslinearoperator` manually.
 
-It is recommended to use the new :obj:`scipy.sparse._sparray` instead of the deprecated
+It is recommended to use the new :obj:`scipy.sparse.sparray` instead of the deprecated
 :obj:`scipy.sparse.spmatrix` (like :obj:`scipy.sparse.csr_array` instead of :obj:`scipy.sparse.csr_matrix`) if one uses sparse
-matricies. Main differece: :obj:`scipy.sparse._sparray` support elementwise multiplication,
+matricies. Main differece: :obj:`scipy.sparse.sparray` support elementwise multiplication,
 hence this module spports elementwise multiplication only for those. 
-Either way, all sparse matricies returned by this module are :obj:`scipy.sparse._sparray`.
+Either way, all sparse matricies returned by this module are :obj:`scipy.sparse.sparray`.
 Beside of elementwise multiplication, everything else should work with :obj:`scipy.sparse.spmatrix` 
-as well, but note that this framework is only test in combination with :obj:`scipy.sparse._sparray`.
+as well, but note that this framework is only test in combination with :obj:`scipy.sparse.sparray`.
 
 
 All matricies implement the 
